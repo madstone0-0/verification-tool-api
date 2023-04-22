@@ -10,8 +10,8 @@ const app = express();
 app.use(morgan("dev"));
 app.use(cors({ origin: "*", credentials: true }));
 
-const PORT = 3000;
-const HOST = "localhost";
+const PORT = 8080;
+const HOST = "0.0.0.0";
 
 app.set("port", process.env.port || PORT);
 app.use(express.json());
@@ -48,10 +48,15 @@ app.post("/api/:token", (req, res, next) => {
     if (token == "baller") {
         const messages = req.body;
         console.log({ messages });
-        getAIResponse(messages).then((data) => {
-            console.log(data.data);
-            res.json(data.data);
-        });
+        getAIResponse(messages)
+            .then((data) => {
+                console.log(data.data);
+                res.json(data.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                next(err);
+            });
     } else {
         res.sendStatus(401).send("Invalid token");
     }
