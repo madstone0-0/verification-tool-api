@@ -1,0 +1,36 @@
+import winston from "winston";
+import morgan from "morgan";
+
+const { combine, timestamp, printf, colorize, align, errors } = winston.format;
+
+const logLevels = {
+    fatal: 0,
+    error: 1,
+    warn: 2,
+    info: 3,
+    debug: 4,
+    trace: 5,
+};
+
+const logger = winston.createLogger({
+    levels: logLevels,
+    level: process.env.LOG_LEVEL || "info",
+    format: combine(
+        colorize({ all: true }),
+        errors({ stack: true }),
+        timestamp({
+            format: "YYYY-MM-DD hh:mm:ss.SSS A",
+        }),
+        align(),
+        printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`),
+    ),
+    transports: [new winston.transports.Console()],
+    exceptionHandlers: [new winston.transports.Console()],
+    rejectionHandlers: [new winston.transports.Console()],
+});
+
+const httpLogger = new morgan("short", {
+    stream: { write: (message) => logger.info(message.trim()) },
+});
+
+export { logger, httpLogger };

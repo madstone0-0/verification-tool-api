@@ -1,13 +1,13 @@
 import express from "express";
 import { Configuration, OpenAIApi } from "openai";
 import { MODEL, TEMP, PERSONA } from "./constants.js";
-import morgan from "morgan";
+import { logger, httpLogger } from "./logging.js";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(morgan("dev"));
+app.use(httpLogger);
 app.use(cors({ origin: "*", credentials: true }));
 
 const PORT = 8080;
@@ -47,14 +47,15 @@ app.post("/api/:token", (req, res, next) => {
     const token = req.params.token;
     if (token == "baller") {
         const messages = req.body;
-        console.log({ messages });
+        logger.info({ messages });
         getAIResponse(messages)
             .then((data) => {
-                console.log(data.data);
                 res.json(data.data);
+                logger.debug(data.data.choices[0]);
+                logger.debug(data.data);
             })
             .catch((err) => {
-                console.error(err);
+                logger.error(err);
                 next(err);
             });
     } else {
@@ -63,5 +64,5 @@ app.post("/api/:token", (req, res, next) => {
 });
 
 app.listen(PORT, HOST, () => {
-    console.log(`Server running on ${HOST}:${app.get("port")}`);
+    logger.info(`Server running on ${HOST}:${app.get("port")}`);
 });
