@@ -47,7 +47,7 @@ app.post("/api/:token", (req, res, next) => {
     const token = req.params.token;
     if (token == "baller") {
         const messages = req.body;
-        logger.info({ messages });
+        logger.info(JSON.stringify(messages));
         getAIResponse(messages)
             .then((data) => {
                 res.json(data.data);

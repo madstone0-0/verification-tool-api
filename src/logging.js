@@ -1,7 +1,16 @@
 import winston from "winston";
 import morgan from "morgan";
 
-const { combine, timestamp, printf, colorize, align, errors } = winston.format;
+const {
+    combine,
+    timestamp,
+    printf,
+    colorize,
+    json,
+    align,
+    errors,
+    prettyPrint,
+} = winston.format;
 
 const logLevels = {
     fatal: 0,
@@ -16,7 +25,8 @@ const logger = winston.createLogger({
     levels: logLevels,
     level: process.env.LOG_LEVEL || "info",
     format: combine(
-        colorize({ all: true }),
+        prettyPrint(),
+        json(),
         errors({ stack: true }),
         timestamp({
             format: "YYYY-MM-DD hh:mm:ss.SSS A",
