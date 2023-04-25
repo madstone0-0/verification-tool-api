@@ -47,15 +47,16 @@ app.post("/api/:token", (req, res, next) => {
     const token = req.params.token;
     if (token == "baller") {
         const messages = req.body;
-        logger.info(JSON.stringify(messages));
         getAIResponse(messages)
             .then((data) => {
                 res.json(data.data);
-                logger.debug(data.data.choices[0]);
-                logger.debug(data.data);
+                logger.debug(JSON.stringify(messages));
+                logger.debug(JSON.stringify(data.data));
+                logger.info(JSON.stringify(messages[messages.length - 1]));
+                logger.info(JSON.stringify(data.data.choices[0].message));
             })
             .catch((err) => {
-                logger.error(err);
+                logger.error(JSON.stringify(err));
                 next(err);
             });
     } else {
